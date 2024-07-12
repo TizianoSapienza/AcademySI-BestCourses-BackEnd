@@ -3,12 +3,13 @@ package com.academysi.service;
 import java.util.List;
 
 import com.academysi.dto.CorsoDto;
+import com.academysi.dto.CorsoRegistrazioneDto;
 import com.academysi.dto.CorsoUpdateDto;
 import com.academysi.model.Corso;
 
 public interface CorsoService {
 
-	void registerCorso(Corso corso);
+	void registerCorso(CorsoRegistrazioneDto corsoRegistrazioneDto);
 
     Corso getCorsoById(int id);
 

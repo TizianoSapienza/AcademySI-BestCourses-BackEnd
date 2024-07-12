@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.academysi.dto.CorsoDto;
+import com.academysi.dto.CorsoRegistrazioneDto;
 import com.academysi.dto.CorsoUpdateDto;
 import com.academysi.jwt.JWTTokenNeeded;
 import com.academysi.jwt.Secured;
@@ -26,30 +27,27 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Secured(role = "Admin")
-@JWTTokenNeeded
 @RestController
 @Path("/corsi")
 public class CorsoController {
 
     @Autowired
     private CorsoService corsoService;
-
+    
+    @Secured(role = "Admin")
+    @JWTTokenNeeded
     @POST
     @Path("/registrazione")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response registerCorso(CorsoDto corsoDto) {
-    	
-        Corso corso = new Corso();
-        
-        corso.setNomeCorso(corsoDto.getNomeCorso());
-        corso.setDescrizioneBreve(corsoDto.getDescrizioneBreve());
-        corso.setDescrizioneCompleta(corsoDto.getDescrizioneCompleta());
-        corso.setDurata(corsoDto.getDurata());
-        
-        corsoService.registerCorso(corso);
-        
-        return Response.status(Response.Status.OK).build();
+    public Response registerCorso(CorsoRegistrazioneDto corsoRegistrazioneDto) {
+        try {
+            corsoService.registerCorso(corsoRegistrazioneDto);
+            return Response.status(Response.Status.OK).build();
+        } catch (EntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
     
     @GET
@@ -73,6 +71,8 @@ public class CorsoController {
         return Response.status(Response.Status.OK).entity(corsoDto).build();
     }
 
+    @Secured(role = "Admin")
+    @JWTTokenNeeded
     @PUT
     @Path("/update/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -85,6 +85,8 @@ public class CorsoController {
         }
     }
 
+    @Secured(role = "Admin")
+    @JWTTokenNeeded
     @DELETE
     @Path("/{id}")
     public Response deleteCorsoById(@PathParam("id") int id) {

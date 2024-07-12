@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.academysi.dao.CategoriaDao;
 import com.academysi.dao.CorsoDao;
 import com.academysi.dto.CorsoDto;
+import com.academysi.dto.CorsoRegistrazioneDto;
 import com.academysi.dto.CorsoUpdateDto;
 import com.academysi.mapper.CorsoMapper;
 import com.academysi.model.Categoria;
@@ -26,7 +27,20 @@ public class CorsoServiceImpl implements CorsoService {
     private CategoriaDao categoriaDao;
 
     @Override
-    public void registerCorso(Corso corso) {
+    public void registerCorso(CorsoRegistrazioneDto corsoRegistrazioneDto) {
+        Optional<Categoria> categoriaOptional = categoriaDao.findById(corsoRegistrazioneDto.getCategoriaId());
+        if (!categoriaOptional.isPresent()) {
+            throw new EntityNotFoundException("Categoria with ID " + corsoRegistrazioneDto.getCategoriaId() + " not found");
+        }
+        Categoria categoria = categoriaOptional.get();
+        
+        Corso corso = new Corso();
+        corso.setNomeCorso(corsoRegistrazioneDto.getNomeCorso());
+        corso.setDescrizioneBreve(corsoRegistrazioneDto.getDescrizioneBreve());
+        corso.setDescrizioneCompleta(corsoRegistrazioneDto.getDescrizioneCompleta());
+        corso.setDurata(corsoRegistrazioneDto.getDurata());
+        corso.setCategoria(categoria);
+        
         corsoDao.save(corso);
     }
     
